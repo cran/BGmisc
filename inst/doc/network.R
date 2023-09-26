@@ -9,9 +9,15 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 library(BGmisc)
 data(hazard)
 
+## ---- echo=FALSE, results='hide', out.width='50%', fig.cap="Hazard Pedigree"----
+capture.output(plotPedigree(hazard, code_male = 0))
+
 ## -----------------------------------------------------------------------------
+
 ds <- ped2fam(hazard, famID = "newFamID")
 table(ds$FamID, ds$newFamID)
+
+
 
 ## -----------------------------------------------------------------------------
 add <- ped2add(hazard)
@@ -30,4 +36,20 @@ add_list <- lapply(
     ped2add(tmp)
   }
 )
+
+## -----------------------------------------------------------------------------
+mit <- ped2mit(hazard)
+mit[1:7, 1:7]
+table(mit)
+
+## -----------------------------------------------------------------------------
+commonNuclear <- ped2cn(hazard)
+commonNuclear [1:7, 1:7]
+
+table(commonNuclear)
+
+## -----------------------------------------------------------------------------
+extendedFamilyEnvironment <- ped2ce(hazard)
+extendedFamilyEnvironment[1:7, 1:7]
+table(extendedFamilyEnvironment)
 

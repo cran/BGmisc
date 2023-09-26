@@ -1,7 +1,7 @@
 Package: BGmisc
 Title: An R Package for Extended Behavior Genetics Analysis
-Version: 1.0
-Date: 2023-09-10
+Version: 1.0.1
+Date: 2023-09-26
 Authors@R: 
   c(person("S. Mason", "Garrison", email = "garrissm@wfu.edu", role = c("aut", "cre"), comment=c(ORCID = "0000-0002-4804-6003")),
     person(c("Michael", "D."), "Hunter", role = "aut", comment=c(ORCID = "0000-0002-3651-6709")),
@@ -20,7 +20,7 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: R (>= 3.5.0)
 NeedsCompilation: no
-Packaged: 2023-09-19 20:09:10 UTC; smaso
+Packaged: 2023-09-26 20:34:59 UTC; smaso
 Author: S. Mason Garrison [aut, cre] (<https://orcid.org/0000-0002-4804-6003>),
   Michael D. Hunter [aut] (<https://orcid.org/0000-0002-3651-6709>),
   Xuanyu Lyu [aut] (<https://orcid.org/0000-0002-2841-5529>),
@@ -28,4 +28,4 @@ Author: S. Mason Garrison [aut, cre] (<https://orcid.org/0000-0002-4804-6003>),
   S. Alexandra Burt [aut] (<https://orcid.org/0000-0001-5538-7431>)
 Maintainer: S. Mason Garrison <garrissm@wfu.edu>
 Repository: CRAN
-Date/Publication: 2023-09-20 07:20:21 UTC
+Date/Publication: 2023-09-26 22:40:04 UTC
