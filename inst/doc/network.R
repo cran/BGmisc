@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -7,20 +7,21 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## ----setup--------------------------------------------------------------------
 library(BGmisc)
-data(hazard)
+data(potter)
 
-## ---- echo=FALSE, results='hide', out.width='50%', fig.cap="Hazard Pedigree"----
-capture.output(plotPedigree(hazard, code_male = 0))
-
-## -----------------------------------------------------------------------------
-
-ds <- ped2fam(hazard, famID = "newFamID")
-table(ds$FamID, ds$newFamID)
-
-
+## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Family Pedigree"----
+plotPedigree(potter, code_male = 1, verbose = TRUE)
 
 ## -----------------------------------------------------------------------------
-add <- ped2add(hazard)
+df_potter <- potter
+names(df_potter)[names(df_potter) == "famID"] <- "oldfam"
+
+ds <- ped2fam(df_potter, famID = "famID", personID = "personID")
+
+table(ds$famID, ds$oldfam)
+
+## -----------------------------------------------------------------------------
+add <- ped2add(potter)
 
 ## -----------------------------------------------------------------------------
 add[1:7, 1:7]
@@ -30,26 +31,43 @@ table(add)
 
 ## -----------------------------------------------------------------------------
 add_list <- lapply(
-  unique(hazard$FamID),
+  unique(potter$famID),
   function(d) {
-    tmp <- hazard[hazard$FamID %in% d, ]
+    tmp <- potter[potter$famID %in% d, ]
     ped2add(tmp)
   }
 )
 
 ## -----------------------------------------------------------------------------
-mit <- ped2mit(hazard)
+mit <- ped2mit(potter)
 mit[1:7, 1:7]
 table(mit)
 
 ## -----------------------------------------------------------------------------
-commonNuclear <- ped2cn(hazard)
-commonNuclear [1:7, 1:7]
+commonNuclear <- ped2cn(potter)
+commonNuclear[1:7, 1:7]
 
 table(commonNuclear)
 
 ## -----------------------------------------------------------------------------
-extendedFamilyEnvironment <- ped2ce(hazard)
+extendedFamilyEnvironment <- ped2ce(potter)
 extendedFamilyEnvironment[1:7, 1:7]
 table(extendedFamilyEnvironment)
+
+## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Subset Pedigree"----
+names(potter)[names(potter) == "oldfam"] <- "famID"
+subset_rows <- c(1:8, 11:36)
+subset_potter <- potter[subset_rows, ]
+
+subset_potter$dadID[subset_potter$dadID %in% c(9, 10)] <- NA
+subset_potter$momID[subset_potter$momID %in% c(9, 10)] <- NA
+
+plotPedigree(subset_potter, code_male = 1, verbose = TRUE)
+
+## -----------------------------------------------------------------------------
+subset_rows <- c(1:5, 31:36)
+subset_potter <- potter[subset_rows, ]
+
+## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Subset Pedigree"----
+plotPedigree(subset_potter, code_male = 1, verbose = TRUE)
 

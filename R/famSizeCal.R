@@ -56,12 +56,11 @@ sizeAllGens <- function(kpc, Ngen, marR) {
 #' @export
 famSizeCal <- function(kpc, Ngen, marR) {
   if (Ngen < 1) {
-    stop("The number of generations should be an integer greater or equal than 1")
+    stop("The number of generations should be an integer greater than or equal to 1")
   }
-  if (Ngen == 1) {
+  else if (Ngen == 1) {
     size <- 2
-  }
-  if (Ngen >= 2) {
+  } else  if (Ngen >= 2) {
     allGens <- sizeAllGens(
       kpc = kpc,
       Ngen = Ngen,
@@ -69,7 +68,7 @@ famSizeCal <- function(kpc, Ngen, marR) {
     )
     size <- sum(allGens)
   } else {
-    stop("You should never see this message. 
+    stop("You should never see this message.
     If you do, that means that famSizeCal is not working properly.")
   }
   return(size)

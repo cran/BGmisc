@@ -2,15 +2,22 @@
 % Please edit documentation in R/simulatePedigree.R
 \name{simulatePedigree}
 \alias{simulatePedigree}
-\title{Simulate Pedigrees}
+\title{Simulate Pedigrees
+This function simulates "balanced" pedigrees based on a group of parameters:
+1) k - Kids per couple;
+2) G - Number of generations;
+3) p - Proportion of males in offspring;
+4) r - Mating rate.}
 \usage{
 simulatePedigree(
   kpc = 3,
   Ngen = 4,
   sexR = 0.5,
   marR = 2/3,
+  rd_kpc = FALSE,
   balancedSex = TRUE,
-  balancedmar = TRUE
+  balancedMar = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -22,9 +29,13 @@ simulatePedigree(
 
 \item{marR}{Mating rate. A numeric value ranging from 0 to 1 which determines the proportion of mated (fertilized) couples in the pedigree within each generation. For instance, marR = 0.5 suggests 50 percent of the offspring in a specific generation will be mated and have their offspring.}
 
+\item{rd_kpc}{logical. If TRUE, the number of kids per mate will be randomly generated from a poisson distribution with mean kpc. If FALSE, the number of kids per mate will be fixed at kpc.}
+
 \item{balancedSex}{Not fully developed yet. Always \code{TRUE} in the current version.}
 
-\item{balancedmar}{Not fully developed yet. Always \code{TRUE} in the current version.}
+\item{balancedMar}{Not fully developed yet. Always \code{TRUE} in the current version.}
+
+\item{verbose}{logical  If TRUE, print progress through stages of algorithm}
 }
 \value{
 A \code{data.frame} with each row representing a simulated individual. The columns are as follows:
@@ -39,6 +50,7 @@ A \code{data.frame} with each row representing a simulated individual. The colum
 }
 }
 \description{
+Simulate Pedigrees
 This function simulates "balanced" pedigrees based on a group of parameters:
 1) k - Kids per couple;
 2) G - Number of generations;

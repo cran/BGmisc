@@ -1,19 +1,22 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 
-## ----setup--------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+
+## Loading Required Libraries
 library(BGmisc)
 
-## -----------------------------------------------------------------------------
 set.seed(5)
-df_ped <- simulatePedigree(kpc = 4,
-                        Ngen = 4,
-                        sexR = .5,
-                        marR = .7)
+df_ped <- simulatePedigree(
+  kpc = 4,
+  Ngen = 4,
+  sexR = .5,
+  marR = .7
+)
 summary(df_ped)
 
 ## -----------------------------------------------------------------------------
@@ -24,6 +27,7 @@ df_ped[21, ]
 plotPedigree(df_ped)
 
 ## ----fig.width=8, fig.height=6------------------------------------------------
+set.seed(8)
 # Simulate a family with 3 generations
 df_ped_3 <- simulatePedigree(Ngen = 3)
 

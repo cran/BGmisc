@@ -35,7 +35,7 @@ test_that("ped2graph produces a graph for inbreeding data", {
 
 
 test_that("ped2add produces correct matrix dims, values, and dimnames for hazard", {
-       data(hazard)
+  data(hazard)
   add <- ped2add(hazard)
   # Check dimension
   expect_equal(dim(add), c(nrow(hazard), nrow(hazard)))
@@ -159,3 +159,22 @@ test_that("ped2ce produces correct matrix dims, values, and dimnames", {
   expect_equal(dn[[1]], dn[[2]])
   expect_equal(dn[[1]], as.character(inbreeding$ID))
 })
+
+test_that("ped2add verbose prints updates", {
+  data(hazard)
+  expect_output(ped2add(hazard, verbose = TRUE), regexp = "Family Size =")
+})
+
+
+
+test_that("ped2maternal/paternal produces correct matrix dims", {
+  data(hazard)
+  mat <- ped2maternal(hazard)
+  expect_equal(dim(mat), c(nrow(hazard), ncol(hazard)+1))
+  data(hazard)
+  pat <- ped2paternal(hazard)
+  expect_equal(dim(pat), c(nrow(hazard), ncol(hazard)+1))
+
+  expect_lt(cor(pat$patID, mat$matID), 1)
+})
+

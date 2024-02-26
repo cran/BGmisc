@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -18,5 +18,5 @@ calculateRelatedness(generations = 1, full = FALSE)
 ## -----------------------------------------------------------------------------
 # Example usage:
 # Infer the relatedness coefficient:
-inferRelatedness(cor_obs = 0.5, ace_A = 0.9, ace_C = 0, shared_C = 0)
+inferRelatedness(obsR = 0.5, aceA = 0.9, aceC = 0, sharedC = 0)
 
