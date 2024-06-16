@@ -68,6 +68,6 @@ plotPedigree(subset_potter, code_male = 1, verbose = TRUE)
 subset_rows <- c(1:5, 31:36)
 subset_potter <- potter[subset_rows, ]
 
-## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Subset Pedigree"----
+## ----echo=FALSE, results='hide', out.width='50%'------------------------------
 plotPedigree(subset_potter, code_male = 1, verbose = TRUE)
 

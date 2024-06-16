@@ -6,7 +6,6 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## -----------------------------------------------------------------------------
-
 ## Loading Required Libraries
 library(BGmisc)
 
@@ -21,6 +20,9 @@ summary(df_ped)
 
 ## -----------------------------------------------------------------------------
 df_ped[21, ]
+
+## -----------------------------------------------------------------------------
+summarizeFamilies(df_ped, famID = "fam")$family_summary
 
 ## ----fig.width=8,fig.height=6-------------------------------------------------
 # Plot the simulated pedigree

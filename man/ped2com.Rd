@@ -7,12 +7,14 @@
 ped2com(
   ped,
   component,
-  max.gen = Inf,
+  max.gen = 25,
   sparse = FALSE,
   verbose = FALSE,
   gc = FALSE,
   flatten.diag = FALSE,
   standardize.colnames = TRUE,
+  tcross.alt.crossprod = FALSE,
+  tcross.alt.star = FALSE,
   ...
 )
 }
@@ -22,8 +24,8 @@ ped2com(
 \item{component}{character.  Which component of the pedigree to return.  See Details.}
 
 \item{max.gen}{the maximum number of generations to compute
-(e.g., only up to 4th degree relatives).  The default of Inf uses as many
-generations as there are in the data.}
+(e.g., only up to 4th degree relatives).  The default is 25. However it can be set to infinity.
+ `Inf` uses as many generations as there are in the data.}
 
 \item{sparse}{logical.  If TRUE, use and return sparse matrices from Matrix package}
 
@@ -35,11 +37,15 @@ generations as there are in the data.}
 
 \item{standardize.colnames}{logical. If TRUE, standardize the column names of the pedigree dataset}
 
+\item{tcross.alt.crossprod}{logical. If TRUE, use alternative method of using Crossprod function for computing the transpose}
+
+\item{tcross.alt.star}{logical. If TRUE, use alternative method of using \%\*\% for computing the transpose}
+
 \item{...}{additional arguments to be passed to \code{\link{ped2com}}}
 }
 \description{
 Take a pedigree and turn it into a relatedness matrix
 }
 \details{
-The algorithms and methodologies used in this function are further discussed and exemplified in the vignette titled "examplePedigreeFunctions".
+The algorithms and methodologies used in this function are further discussed and exemplified in the vignette titled "examplePedigreeFunctions". For more advanced scenarios and detailed explanations, consult this vignette.
 }
