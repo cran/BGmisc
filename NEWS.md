@@ -1,3 +1,7 @@
+# BGmisc 1.3.2
+* Added some more tests of identifyModel.R
+* Modified tests to be MKL friendly
+
 # BGmisc 1.3.1
 * Confirmed that all orcids are correct
 * Added gedcom importer
