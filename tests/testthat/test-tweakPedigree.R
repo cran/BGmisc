@@ -21,6 +21,13 @@ test_that("makeTwins - Twins specified by IDs", {
     MZtwin = c(2, 1, NA, NA)
   )
   result <- makeTwins(ped, ID_twin1 = 1, ID_twin2 = 2)
+
+  expect_equal(result, expected_result)
+  # does it handle weird variable names? "fam" = "famID"
+
+  names(ped)[1] <- "famID"
+
+  result <- makeTwins(ped, ID_twin1 = 1, ID_twin2 = 2, verbose = TRUE)
   expect_equal(result, expected_result)
 })
 
@@ -75,9 +82,6 @@ test_that("makeInbreeding - Inbred mates specified by IDs", {
   expect_equal(result, expected_result)
 })
 
-
-
-
 test_that("makeInbreeding - Inbred mates specified by generation and sibling", {
   set.seed(15)
   Ngen <- 4
@@ -111,7 +115,7 @@ test_that("makeInbreeding - Inbred mates specified by generation and cousin", {
 
   expect_error(makeInbreeding(ped,
     gen_inbred = gen_inbred,
-    type_inbred = type_inbred
+    type_inbred = type_inbred,verbose = TRUE
   ), regexp = "Cousin inbreedin")
 })
 

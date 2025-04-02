@@ -5,10 +5,8 @@ knitr::opts_chunk$set(
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 
-## ----setup--------------------------------------------------------------------
-library(BGmisc)
-
 ## -----------------------------------------------------------------------------
+library(BGmisc)
 # Example usage:
 # For full siblings, the relatedness coefficient is expected to be 0.5:
 calculateRelatedness(generations = 1, full = TRUE)
@@ -19,4 +17,8 @@ calculateRelatedness(generations = 1, full = FALSE)
 # Example usage:
 # Infer the relatedness coefficient:
 inferRelatedness(obsR = 0.5, aceA = 0.9, aceC = 0, sharedC = 0)
+
+## -----------------------------------------------------------------------------
+# Now assume shared environment is fully shared:
+inferRelatedness(obsR = 0.5, aceA = 0.45, aceC = 0.45, sharedC = 1)
 

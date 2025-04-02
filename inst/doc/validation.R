@@ -13,29 +13,28 @@ library(BGmisc)
 df <- ped2fam(potter, famID = "newFamID", personID = "personID")
 
 # Check for ID issues
-result <- checkIDs(df, repair = FALSE)
-print(result)
+checkIDs(df, repair = FALSE)
 
 ## ----datamade-----------------------------------------------------------------
-
 # Create our problematic dataset
 df_duplicates <- df
 # Sibling ID conflict
-df_duplicates$personID[df_duplicates$name == "Vernon Dursley"] <- 
+df_duplicates$personID[df_duplicates$name == "Vernon Dursley"] <-
   df_duplicates$personID[df_duplicates$name == "Marjorie Dursley"]
 # Duplicate entry
-df_duplicates <- rbind(df_duplicates, 
-                       df_duplicates[df_duplicates$name == "Dudley Dursley", ])
-
+df_duplicates <- rbind(
+  df_duplicates,
+  df_duplicates[df_duplicates$name == "Dudley Dursley", ]
+)
 
 ## -----------------------------------------------------------------------------
 library(tidyverse)
 
-summarizeFamilies(df_duplicates, 
-                  famID = "newFamID", 
-                  personID = "personID")$family_summary %>% 
+summarizeFamilies(df_duplicates,
+  famID = "newFamID",
+  personID = "personID"
+)$family_summary %>%
   glimpse()
-
 
 ## -----------------------------------------------------------------------------
 # Identify duplicates
