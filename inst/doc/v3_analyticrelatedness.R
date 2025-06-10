@@ -3,7 +3,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-options(rmarkdown.html_vignette.check_title = FALSE)
+#options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## -----------------------------------------------------------------------------
 library(BGmisc)
@@ -293,8 +293,14 @@ for (i in 1:length(famIDs)) {
 }
 
 ## ----echo=FALSE, message=FALSE, warning=FALSE---------------------------------
-plotPedigree(inbreeding_list[[1]]$df_fam,
-  verbose = FALSE
+library(ggpedigree)
+df <- inbreeding_list[[1]]$df_fam
+
+ggpedigree(df,
+  verbose = FALSE, personID = "ID",
+  config = list(
+    code_male = 0
+  )
 )
 
 ## -----------------------------------------------------------------------------

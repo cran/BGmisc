@@ -10,7 +10,8 @@ library(BGmisc)
 data(potter)
 
 ## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Family Pedigree"----
-plotPedigree(potter, code_male = 1, verbose = TRUE)
+library(ggpedigree)
+ggpedigree(potter, code_male = 1, verbose = TRUE)
 
 ## -----------------------------------------------------------------------------
 df_potter <- potter
@@ -55,6 +56,8 @@ extendedFamilyEnvironment[1:7, 1:7]
 table(extendedFamilyEnvironment)
 
 ## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Subset Pedigree"----
+library(ggpedigree)
+
 names(potter)[names(potter) == "oldfam"] <- "famID"
 subset_rows <- c(1:8, 11:36)
 subset_potter <- potter[subset_rows, ]
@@ -62,12 +65,12 @@ subset_potter <- potter[subset_rows, ]
 subset_potter$dadID[subset_potter$dadID %in% c(9, 10)] <- NA
 subset_potter$momID[subset_potter$momID %in% c(9, 10)] <- NA
 
-plotPedigree(subset_potter, code_male = 1, verbose = TRUE)
+ggpedigree(subset_potter, code_male = 1, verbose = TRUE)
 
 ## -----------------------------------------------------------------------------
 subset_rows <- c(1:5, 31:36)
 subset_potter <- potter[subset_rows, ]
 
 ## ----echo=FALSE, results='hide', out.width='50%'------------------------------
-plotPedigree(subset_potter, code_male = 1, verbose = TRUE)
+ggpedigree(subset_potter, code_male = 1, verbose = TRUE)
 

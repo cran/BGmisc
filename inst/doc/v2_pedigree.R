@@ -24,19 +24,15 @@ df_ped[21, ]
 ## -----------------------------------------------------------------------------
 summarizeFamilies(df_ped, famID = "fam")$family_summary
 
-## ----fig.width=8,fig.height=6-------------------------------------------------
-# Plot the simulated pedigree
-plotPedigree(df_ped)
-
 ## ----warning=FALSE, message=FALSE,fig.width=8, fig.height=6-------------------
 library(ggpedigree)
 
-df_ped_recoded <- recodeSex(df_ped, code_male = "M", recode_male=1, recode_female = 0)
+df_ped_recoded <- recodeSex(df_ped, code_male = "M", recode_male = 1, recode_female = 0)
 
 ggpedigree::ggpedigree(df_ped_recoded,
-           personID = "ID",
-           code_male = 1) 
-
+  personID = "ID",
+  code_male = 1
+)
 
 ## ----fig.width=8, fig.height=6------------------------------------------------
 set.seed(8)
@@ -46,38 +42,33 @@ df_ped_3 <- simulatePedigree(Ngen = 3)
 # Simulate a family with 4 generations
 df_ped_4 <- simulatePedigree(Ngen = 4)
 
-# Set up plotting parameters for side-by-side display
-par(mfrow = c(1, 2))
-
-# Plot the 3-generation pedigree
-plotPedigree(df_ped_3, width = 3)
-
-# Plot the 4-generation pedigree
-plotPedigree(df_ped_4, width = 1)
-
-
 ## ----echo=FALSE,fig.width=8, fig.height=6-------------------------------------
 library(ggplot2)
 
 df_ped_3$famID <- 1
-df_ped_3$fam <-NULL
-df_ped_3$ID <- df_ped_3$ID/100
-df_ped_3$dadID <- df_ped_3$dadID/100
-df_ped_3$momID <- df_ped_3$momID/100
-df_ped_3$spID <- df_ped_3$spID/100
+df_ped_3$fam <- NULL
+df_ped_3$ID <- df_ped_3$ID / 100
+df_ped_3$dadID <- df_ped_3$dadID / 100
+df_ped_3$momID <- df_ped_3$momID / 100
+df_ped_3$spID <- df_ped_3$spID / 100
 df_ped_4$famID <- 2
-df_ped_4$fam <-NULL
+df_ped_4$fam <- NULL
 
 df_ped_all <- rbind(df_ped_3, df_ped_4)
-df_ped_all <- recodeSex(df_ped_all, code_male = "M", 
-recode_male=1, 
-recode_female = 0)
+df_ped_all <- recodeSex(df_ped_all,
+  code_male = "M",
+  recode_male = 1,
+  recode_female = 0
+)
 
 ggpedigree::ggpedigree(df_ped_all,
-           personID = "ID", 
-           famID = "famID",
-config = list(label_method = "geom_text",
-label_text_size =1),
-           code_male = 1) + 
-facet_wrap(~famID, scales = "free")
+  personID = "ID",
+  famID = "famID",
+  config = list(
+    label_method = "geom_text",
+    label_text_size = 1
+  ),
+  code_male = 1
+) +
+  facet_wrap(~famID, scales = "free")
 

@@ -57,9 +57,26 @@ dany_id <- df_got %>%
 ## -----------------------------------------------------------------------------
 jon_dany_row <- df_links %>%
   filter(ID1 == jon_id | ID2 == jon_id) %>%
-  filter(ID1 %in% dany_id | ID2 %in% dany_id)
+  filter(ID1 %in% dany_id | ID2 %in% dany_id) %>% # round to nearest 4th decimal
+  mutate(across(c(addRel, mitRel, cnuRel), ~ round(.x, 4)))
 
 jon_dany_row
+
+## -----------------------------------------------------------------------------
+
+rhaenyra_id <- df_got %>%
+  filter(name == "Rhaenyra Targaryen") %>%
+  pull(ID)
+daemon_id <- df_got %>%
+  filter(name == "Daemon Targaryen") %>%
+  pull(ID)
+
+rhaenyra_daemon_row <- df_links %>% 
+  filter(ID1 == rhaenyra_id | ID2 == rhaenyra_id) %>%
+  filter(ID1 %in% daemon_id | ID2 %in% daemon_id) %>% # round to nearest 4th decimal
+  mutate(across(c(addRel, mitRel, cnuRel), ~ round(.x, 4)))
+
+rhaenyra_daemon_row
 
 ## -----------------------------------------------------------------------------
 df_repaired <- checkParentIDs(df_got,
@@ -68,38 +85,75 @@ df_repaired <- checkParentIDs(df_got,
   parentswithoutrow = FALSE,
   repairsex = FALSE
 ) %>% mutate(
-  famID = 1,
+  # famID = 1,
   affected = case_when(
-    ID %in% c(jon_id, dany_id, "365") ~ 1,
-    TRUE ~ 0
+    ID %in% c(jon_id, dany_id, "365") ~ T,
+    TRUE ~ F
   )
 )
 
-## ----message=FALSE, warning=FALSE---------------------------------------------
-plotPedigree(df_repaired, affected = df_repaired$affected, verbose = FALSE)
+## -----------------------------------------------------------------------------
 
-## ----message=FALSE, warning=FALSE---------------------------------------------
-library(ggpedigree)
-plt <- ggPedigree(df_repaired,
-  status_col = "affected",
+checkIDs <- checkIDs(df_repaired, verbose = TRUE)
+
+#checkIDs
+
+## -----------------------------------------------------------------------------
+# Check for unique IDs and parent-child relationships
+checkPedigreeNetwork<- checkPedigreeNetwork(df_repaired,
   personID = "ID",
+  momID = "momID",
+  dadID = "dadID",
+  verbose = TRUE
+)
+
+checkPedigreeNetwork
+
+## ----eval=FALSE, fig.height=8, fig.width=10, message=FALSE, warning=FALSE, include=FALSE----
+# plotPedigree(df_repaired %>% mutate(
+#   famID = 1
+# ), affected = df_repaired$affected,
+# verbose = FALSE)
+
+## ----message=FALSE, warning=FALSE, fig.width=10, fig.height=8-----------------
+library(ggpedigree)
+
+df_repaired_renamed <- df_repaired %>% rename(
+  personID = ID
+)
+plt <- ggpedigree(df_repaired_renamed,
+  overlay_column = "affected",
+  personID = "personID",
+  interactive = FALSE,
   config = list(
-    status_unaffected_lab = 0,
-    sex_color = TRUE,
+   overlay_include = TRUE,
+    point_size = .75,
     code_male = "M",
-    status_affected_lab = 1,
-    affected_shape = 4,
     ped_width = 14,
-    include_tooltips = TRUE,
     label_nudge_y = -.25,
     include_labels = TRUE,
     label_method = "geom_text",
-    segment_self_color = "purple",
-    tooltip_cols = c("name")
-  )
-)
+    #segment_self_color = "purple",
+    sex_color_include = FALSE,
+    focal_fill_personID = 339,#353,
+    focal_fill_include = TRUE,
+    tooltip_columns = c( "personID","name", "focal_fill"),
+    focal_fill_force_zero = TRUE,
+    focal_fill_mid_color = "orange",
+    focal_fill_low_color = "#9F2A63FF",
+    focal_fill_legend_title = "Relatedness to \nRhaenyra Targaryen",
+    focal_fill_na_value = "black",
+    value_rounding_digits = 4
+))
 
-plt +
-  theme(legend.position = "none") +
-  labs(title = "ASOIAF Pedigree: Jon Snow and Daenerys Targaryen")
+plt
+
+# reduce file size for CRAN
+#if (interactive()) {
+  # If running interactively, use plotly::partial_bundle
+  # to reduce file size for CRAN
+#  plotly::partial_bundle(plt)
+#} else {
+#  plotly::partial_bundle(plt, local = TRUE)
+#}
 
