@@ -182,7 +182,7 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
 
       # Start to connect children with mother and father
       #
-      if (verbose) {
+      if (verbose == TRUE) {
         message(
           "Step 2.1: mark a group of potential sons and daughters in the i th generation"
         )
@@ -212,7 +212,7 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
         code_male = code_male,
         code_female = code_female
       )
-      if (verbose) {
+      if (verbose == TRUE) {
         message(
           "Step 2.2: mark a group of potential parents in the i-1 th generation"
         )
@@ -243,7 +243,7 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
 
       df_Ngen <- df_Ngen[order(as.numeric(rownames(df_Ngen))), , drop = FALSE]
       df_Fam[df_Fam$gen == i - 1, ] <- df_Ngen
-      if (verbose) {
+      if (verbose == TRUE) {
         message(
           "Step 2.3: connect the i and i-1 th generation"
         )
@@ -302,7 +302,7 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
         # the length of IdMa and IdPa can be longer than the vector of offspring, so truncated it
         ### making sure sampling out the single people instead of couples
         if (length(IdPa) - length(IdOfp) > 0) {
-          if (verbose) {
+          if (verbose == TRUE) {
             message("length of IdPa", length(IdPa), "\n")
           }
           IdRm <- sample.int(length(IdPa), size = length(IdPa) - length(IdOfp))
@@ -352,13 +352,26 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
 #' 4) r - Mating rate.
 #'
 #' @importFrom stats runif
-#' @param kpc Number of kids per couple. An integer >= 2 that determines how many kids each fertilized mated couple will have in the pedigree. Default value is 3. Returns an error when kpc equals 1.
-#' @param Ngen Number of generations. An integer >= 2 that determines how many generations the simulated pedigree will have. The first generation is always a fertilized couple. The last generation has no mated individuals.
-#' @param sexR Sex ratio of offspring. A numeric value ranging from 0 to 1 that determines the proportion of males in all offspring in this pedigree. For instance, 0.4 means 40 percent of the offspring will be male.
-#' @param marR Mating rate. A numeric value ranging from 0 to 1 which determines the proportion of mated (fertilized) couples in the pedigree within each generation. For instance, marR = 0.5 suggests 50 percent of the offspring in a specific generation will be mated and have their offspring.
-#' @param rd_kpc logical. If TRUE, the number of kids per mate will be randomly generated from a poisson distribution with mean kpc. If FALSE, the number of kids per mate will be fixed at kpc.
-#' @param balancedSex Not fully developed yet. Always \code{TRUE} in the current version.
-#' @param balancedMar Not fully developed yet. Always \code{TRUE} in the current version.
+#' @param kpc Number of kids per couple. An integer >= 2 that determines how
+#' many kids each fertilized mated couple will have in the pedigree. Default
+#' value is 3. Returns an error when kpc equals 1.
+#' @param Ngen Number of generations. An integer >= 2 that determines how many
+#' generations the simulated pedigree will have. The first generation is always
+#' a fertilized couple. The last generation has no mated individuals.
+#' @param sexR Sex ratio of offspring. A numeric value ranging from 0 to 1 that
+#' determines the proportion of males in all offspring in this pedigree. For
+#' instance, 0.4 means 40 percent of the offspring will be male.
+#' @param marR Mating rate. A numeric value ranging from 0 to 1 which determines
+#' the proportion of mated (fertilized) couples in the pedigree within each
+#' generation. For instance, marR  = 0.5 suggests 50 percent of the offspring in
+#'  a specific generation will be  mated and have their offspring.
+#' @param rd_kpc logical. If TRUE, the number of kids per mate will be randomly
+#' generated from a poisson distribution with mean kpc. If FALSE, the number of
+#' kids per mate will be fixed at kpc.
+#' @param balancedSex Not fully developed yet. Always \code{TRUE} in the
+#' current version.
+#' @param balancedMar Not fully developed yet. Always \code{TRUE} in the
+#' current version.
 #' @param verbose logical  If TRUE, message progress through stages of algorithm
 #' @param code_male The value to use for males. Default is "M"
 #' @param code_female The value to use for females. Default is "F"
@@ -397,7 +410,7 @@ simulatePedigree <- function(kpc = 3,
   # Calculate the expected family size in each generations
   sizeGens <- allGens(kpc = kpc, Ngen = Ngen, marR = marR)
   #  famSizeIndex <- 1:sum(sizeGens)
-  if (verbose) {
+  if (verbose == TRUE) {
     message(
       "Step 1: Let's build the connection within each generation first"
     )
@@ -414,7 +427,7 @@ simulatePedigree <- function(kpc = 3,
     code_male = code_male,
     code_female = code_female
   )
-  if (verbose) {
+  if (verbose == TRUE) {
     message(
       "Step 2: Let's try to build connection between each two generations"
     )

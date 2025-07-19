@@ -3,7 +3,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-#options(rmarkdown.html_vignette.check_title = FALSE)
+# options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## -----------------------------------------------------------------------------
 library(BGmisc)
@@ -214,7 +214,7 @@ results <- data.frame(
 )
 
 ## -----------------------------------------------------------------------------
-for (i in 1:length(famIDs)) {
+for (i in seq_len(famIDs)) {
   # make three versions to filter down
   df_fam_dad <- df_fam_mom <- df_fam <- df[df$famID == famIDs[i], ]
 

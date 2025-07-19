@@ -17,14 +17,15 @@ utils::globalVariables(c(".N", ".SD"))
 #' Beyond summary statistics, the function identifies the founding member of
 #' each lineage based on the specified sorting variable (`founder_sort_var`),
 #' defaulting to birth year (`byr`) when available or `personID` otherwise.
-#' Users can retrieve the largest and oldest lineages by setting `nbiggest`
-#' and `noldest`, respectively.
+#' Users can retrieve the largest and oldest lineages by setting `n_biggest`
+#' and `n_oldest`, respectively.
 #'
 #' @inheritParams ped2fam
 #' @inheritParams ped2maternal
 #' @inheritParams ped2paternal
-#' @param nbiggest Integer. Number of largest lineages to return (sorted by count).
-#' @param noldest Integer. Number of oldest lineages to return (sorted by birth year).
+#' @param n_keep Integer. Number of lineages to keep in the output for each type of summary.
+#' @param n_biggest Integer. Number of largest lineages to return (sorted by count).
+#' @param n_oldest Integer. Number of oldest lineages to return (sorted by birth year).
 #' @param byr Character. Optional column name for birth year. Used to determine the oldest lineages.
 #' @param type Character vector. Specifies which summaries to compute.
 #'   Options: `"fathers"`, `"mothers"`, `"families"`. Default includes all three.
@@ -38,6 +39,7 @@ utils::globalVariables(c(".N", ".SD"))
 #' @param verbose Logical, if TRUE, print progress messages.
 #' @returns A data.frame (or list) containing summary statistics for family, maternal, and paternal lines, as well as the 5 oldest and biggest lines.
 #' @importFrom data.table as.data.table
+#' @aliases summarisePedigrees summarisepedigrees summarizepedigrees
 #' @export
 summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
                                momID = "momID", dadID = "dadID",
@@ -46,8 +48,9 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
                                byr = NULL,
                                include_founder = FALSE,
                                founder_sort_var = NULL,
-                               nbiggest = 5,
-                               noldest = nbiggest,
+                               n_keep = 5,
+                               n_biggest = n_keep,
+                               n_oldest = n_keep,
                                skip_var = NULL,
                                five_num_summary = FALSE,
                                network_checks = FALSE,
@@ -83,36 +86,28 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
   ## If founder_sort_var is NULL, sort by byr if it's present, otherwise sort by personID
   if (is.null(founder_sort_var) && is.null(byr)) {
     founder_sort_var <- personID
-  } else if (is.null(founder_sort_var) & !is.null(byr)) {
+  } else if (is.null(founder_sort_var) && !is.null(byr)) {
     founder_sort_var <- byr
   }
 
-  # Build the pedigree using the provided functions
-  if ("families" %in% type && !famID %in% names(ped)) {
-    if (verbose) message("Counting families...")
-    ped <- ped2fam(ped,
-      personID = personID,
-      momID = momID, dadID = dadID, famID = famID
-    )
-  }
-  if ("mothers" %in% type && !matID %in% names(ped)) {
-    if (verbose == TRUE) message("Counting mothers...")
-    ped <- ped2maternal(ped,
-      personID = personID,
-      momID = momID, dadID = dadID, matID = matID
-    )
-  }
-  if ("fathers" %in% type && !patID %in% names(ped)) {
-    if (verbose == TRUE) message("Counting fathers...")
-    ped <- ped2paternal(ped,
-      personID = personID,
-      momID = momID, dadID = dadID, patID = patID
-    )
-  }
 
+
+  ped <- prepSummarizePedigrees(
+    ped = ped,
+    type = type,
+    famID = famID,
+    verbose = verbose,
+    personID = personID,
+    momID = momID,
+    dadID = dadID,
+    matID = matID,
+    patID = patID
+  )
 
   # Convert to data.table
   ped_dt <- data.table::as.data.table(ped)
+
+
 
   # Initialize...
   ## Output list
@@ -121,7 +116,7 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
   n_fathers <- n_mothers <- n_families <- NULL
 
 
-  if (network_checks) {
+  if (network_checks == TRUE) {
     if (verbose == TRUE) message("Performing network validation checks...")
     output$network_validation <- checkPedigreeNetwork(
       ped,
@@ -136,7 +131,8 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
 
   if ("families" %in% type) {
     if (verbose == TRUE) message("Summarizing families...")
-    family_summary_dt <- calculateSummaryDT(ped_dt, famID,
+    family_summary_dt <- calculateSummaryDT(ped_dt,
+      group_var = famID,
       skip_var = skip_var,
       five_num_summary = five_num_summary
     )
@@ -156,11 +152,12 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
 
   if ("mothers" %in% type) {
     if (verbose == TRUE) message("Summarizing maternal lines...")
-    maternal_summary_dt <- calculateSummaryDT(ped_dt, matID,
+    maternal_summary_dt <- calculateSummaryDT(ped_dt,
+      group_var = matID,
       skip_var = skip_var,
       five_num_summary = five_num_summary
     )
-    if (include_founder) {
+    if (include_founder == TRUE) {
       maternal_summary_dt <- summarizeFounder(
         verbose = verbose, ped_dt = ped_dt,
         group_var = matID,
@@ -169,16 +166,19 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
       )
     }
     output$maternal_summary <- maternal_summary_dt
+
     n_mothers <- nrow(maternal_summary_dt)
+
     if (verbose == TRUE) message("Summarized ", n_mothers, " maternal lines.")
   }
   if ("fathers" %in% type) {
     if (verbose == TRUE) message("Summarizing paternal lines...")
-    paternal_summary_dt <- calculateSummaryDT(ped_dt, patID,
+    paternal_summary_dt <- calculateSummaryDT(ped_dt,
+      group_var = patID,
       skip_var = skip_var,
       five_num_summary = five_num_summary
     )
-    if (include_founder) {
+    if (include_founder == TRUE) {
       paternal_summary_dt <- summarizeFounder(
         verbose = verbose, ped_dt = ped_dt,
         group_var = patID,
@@ -188,25 +188,26 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
     }
 
     output$paternal_summary <- paternal_summary_dt
+
     n_fathers <- nrow(paternal_summary_dt)
     if (verbose == TRUE) message("Summarized ", n_fathers, " paternal lines.")
   }
 
   ## Check errors
   #  if (check_errors) {
-  #   if (verbose) message("Checking for errors...")
+  #   if (verbose == TRUE) message("Checking for errors...")
   #    output$checkIDs <- checkIDs(ped,
   #                                repair = FALSE, verbose = verbose)
   #  }
 
   ## oldest
-  if (!is.null(byr) && noldest > 0) {
+  if (!is.null(byr) && n_oldest > 0) {
     if (!is.null(n_families) && "families" %in% type) {
       if (verbose == TRUE) message("Finding oldest families...")
       output$oldest_families <- findOldest(
         foo_summary_dt = family_summary_dt,
         byr = byr,
-        noldest = noldest,
+        n_oldest = n_oldest,
         n_foo = n_families
       )
     }
@@ -215,7 +216,7 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
       output$oldest_maternal <- findOldest(
         foo_summary_dt = maternal_summary_dt,
         byr = byr,
-        noldest = noldest,
+        n_oldest = n_oldest,
         n_foo = n_mothers
       )
     }
@@ -224,32 +225,32 @@ summarizePedigrees <- function(ped, famID = "famID", personID = "ID",
       output$oldest_paternal <- findOldest(
         foo_summary_dt = paternal_summary_dt,
         byr = byr,
-        noldest = noldest,
+        n_oldest = n_oldest,
         n_foo = n_fathers
       )
     }
   }
 
   # biggest lines
-  if (!is.null(nbiggest) && nbiggest > 0) {
+  if (!is.null(n_biggest) && n_biggest > 0) {
     if (!is.null(n_families) && "families" %in% type) {
       output$biggest_families <- findBiggest(
         foo_summary_dt = family_summary_dt,
-        nbiggest = nbiggest,
+        n_biggest = n_biggest,
         n_foo = n_families
       )
     }
     if (!is.null(n_mothers) && "mothers" %in% type) {
       output$biggest_maternal <- findBiggest(
         foo_summary_dt = maternal_summary_dt,
-        nbiggest = nbiggest,
+        n_biggest = n_biggest,
         n_foo = n_mothers
       )
     }
     if (!is.null(n_fathers) && "fathers" %in% type) {
       output$biggest_paternal <- findBiggest(
         foo_summary_dt = paternal_summary_dt,
-        nbiggest = nbiggest,
+        n_biggest = n_biggest,
         n_foo = n_fathers
       )
     }
@@ -334,12 +335,12 @@ findFounder <- function(data, group_var, sort_var) {
 #'
 #' @inheritParams summarizePedigrees
 #' @inheritParams findFounder
-#'
+#' @aliases summarizefounder summariseFounder
 #' @keywords internal
 
 summarizeFounder <- function(ped_dt, group_var, sort_var,
                              foo_summary_dt, verbose) {
-  if (verbose) {
+  if (verbose == TRUE) {
     message(paste0(
       "Finding originating members for ",
       "group_var"
@@ -361,26 +362,27 @@ summarizeFounder <- function(ped_dt, group_var, sort_var,
 #' @inheritParams summarizePedigrees
 #' @seealso [summarizePedigrees ()]
 #' @export
-#'
+#' @aliases summarizematrilines summarisematrilines summariseMatrilines
 summarizeMatrilines <- function(ped, famID = "famID", personID = "ID",
                                 momID = "momID", dadID = "dadID",
                                 matID = "matID", patID = "patID",
                                 byr = NULL, include_founder = FALSE,
                                 founder_sort_var = NULL,
-                                nbiggest = 5, noldest = 5, skip_var = NULL,
-                                five_num_summary = FALSE, verbose = FALSE) {
+                                n_biggest = 5, n_oldest = 5, skip_var = NULL,
+                                five_num_summary = FALSE, verbose = FALSE,
+                                network_checks = FALSE) {
   # Call to wrapper function
   summarizePedigrees(
     ped = ped,
     personID = personID,
-    nbiggest = nbiggest,
-    noldest = noldest,
+    n_biggest = n_biggest,
+    n_oldest = n_oldest,
     byr = byr,
     include_founder = include_founder,
     momID = momID, dadID = dadID,
     famID = famID, matID = matID, patID = patID, skip_var = skip_var,
     type = "mothers", verbose = verbose, five_num_summary = five_num_summary,
-    founder_sort_var = founder_sort_var
+    founder_sort_var = founder_sort_var, network_checks = network_checks
   )
 }
 
@@ -391,47 +393,49 @@ summarizeMatrilines <- function(ped, famID = "famID", personID = "ID",
 #' @inheritParams summarizePedigrees
 #' @seealso [summarizePedigrees ()]
 #' @export
-#'
+#' @aliases summarizepatrilines summarisepatrilines summarisePatrilines
 summarizePatrilines <- function(ped, famID = "famID", personID = "ID",
                                 momID = "momID", dadID = "dadID",
                                 matID = "matID", patID = "patID",
                                 byr = NULL, founder_sort_var = NULL,
                                 include_founder = FALSE,
-                                nbiggest = 5, noldest = 5, skip_var = NULL,
-                                five_num_summary = FALSE, verbose = FALSE) {
+                                n_biggest = 5, n_oldest = 5, skip_var = NULL,
+                                five_num_summary = FALSE, verbose = FALSE,
+                                network_checks = FALSE) {
   # Call to wrapper function
   summarizePedigrees(
     ped = ped,
     personID = personID,
-    nbiggest = nbiggest,
-    noldest = noldest,
+    n_biggest = n_biggest,
+    n_oldest = n_oldest,
     byr = byr,
     include_founder = include_founder,
     momID = momID, dadID = dadID,
     famID = famID, matID = matID, patID = patID, skip_var = skip_var,
     type = "fathers", verbose = verbose, five_num_summary = five_num_summary,
-    founder_sort_var = founder_sort_var
+    founder_sort_var = founder_sort_var, network_checks = network_checks
   )
 }
 
 #' Summarize the families in a pedigree
 #' @inheritParams summarizePedigrees
 #' @seealso [summarizePedigrees ()]
+#' @aliases summarizefamilies summarisefamilies summariseFamilies
 #' @export
-
 summarizeFamilies <- function(ped, famID = "famID", personID = "ID",
                               momID = "momID", dadID = "dadID",
                               matID = "matID", patID = "patID",
                               byr = NULL, founder_sort_var = NULL,
                               include_founder = FALSE,
-                              nbiggest = 5, noldest = 5, skip_var = NULL,
-                              five_num_summary = FALSE, verbose = FALSE) {
+                              n_biggest = 5, n_oldest = 5, skip_var = NULL,
+                              five_num_summary = FALSE, verbose = FALSE,
+                              network_checks = FALSE) {
   # Call to wrapper function
   summarizePedigrees(
     ped = ped,
     personID = personID,
-    nbiggest = nbiggest,
-    noldest = noldest,
+    n_biggest = n_biggest,
+    n_oldest = n_oldest,
     byr = byr,
     include_founder = include_founder,
     momID = momID,
@@ -443,7 +447,8 @@ summarizeFamilies <- function(ped, famID = "famID", personID = "ID",
     type = "families",
     verbose = verbose,
     five_num_summary = five_num_summary,
-    founder_sort_var = founder_sort_var
+    founder_sort_var = founder_sort_var,
+    network_checks = network_checks
   )
 }
 # Function to find the oldest individuals in a pedigree
@@ -452,31 +457,70 @@ summarizeFamilies <- function(ped, famID = "famID", personID = "ID",
 #' @param foo_summary_dt A data.table containing the summary statistics.
 #' @param n_foo An integer specifying the number of individuals in the summary.
 #' @returns a data.table containing the oldest families in the pedigree.
-
-findOldest <- function(foo_summary_dt, byr, noldest, n_foo) {
-  oldest_foo <- try_na(foo_summary_dt[order(get(byr))][1:min(c(noldest, n_foo),
+#' @aliases findoldest
+findOldest <- function(foo_summary_dt, byr, n_oldest, n_foo) {
+  oldest_foo <- try_na(foo_summary_dt[order(get(byr))][1:min(c(n_oldest, n_foo),
     na.rm = TRUE
   )])
   return(oldest_foo)
 }
 
-# Function to find the biggest families in a pedigree
+#' Function to find the biggest families in a pedigree
 
 #' This function finds the biggest families in a pedigree. It is supposed to be
 #' used internally by the \code{summarize_pedigree} function.
 #' @inheritParams findOldest
 #' @inheritParams summarizePedigrees
 #' @returns a data.table containing the biggest families in the pedigree.
+#' @aliases findbiggest
 
-
-findBiggest <- function(foo_summary_dt, nbiggest, n_foo) {
+findBiggest <- function(foo_summary_dt, n_biggest, n_foo) {
   biggest_foo <- try_na(
-    foo_summary_dt[order(-get("count"))][1:min(c(nbiggest, n_foo),
+    foo_summary_dt[order(-get("count"))][1:min(c(n_biggest, n_foo),
       na.rm = TRUE
     )]
   )
   return(biggest_foo)
 }
+
+#' Function to prepare the pedigree for summarization
+#' This function prepares the pedigree for summarization by ensuring that the
+#' necessary IDs are present and that the pedigree is built correctly.
+#' @inheritParams summarizePedigrees
+
+prepSummarizePedigrees <- function(ped,
+                                   type,
+                                   verbose = FALSE,
+                                   famID,
+                                   personID, momID, dadID, matID, patID) {
+  # Build the pedigree using the provided functions
+  if ("families" %in% type && !famID %in% names(ped)) {
+    if (verbose == TRUE) message("Counting families...")
+    ped <- ped2fam(ped,
+      personID = personID,
+      momID = momID, dadID = dadID, famID = famID
+    )
+  }
+  if ("mothers" %in% type && !matID %in% names(ped)) {
+    if (verbose == TRUE) message("Counting mothers...")
+    ped <- ped2maternal(ped,
+      personID = personID,
+      momID = momID, dadID = dadID, matID = matID
+    )
+  }
+  if ("fathers" %in% type && !patID %in% names(ped)) {
+    if (verbose == TRUE) message("Counting fathers...")
+    ped <- ped2paternal(ped,
+      personID = personID,
+      momID = momID, dadID = dadID, patID = patID
+    )
+  }
+
+
+  return(ped)
+}
+
+
 
 #' @rdname summarizePedigrees
 #' @export

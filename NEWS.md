@@ -1,6 +1,28 @@
-# BGmisc 1.4.3.1
-* Updated ASOIAF pedigree to reduce missing parents.
+# BGmisc 1.5.0
+## CRAN submission
+* Removed ASOIAF dataset from BGmisc, now in ggpedigree
+* Enhancing potter family tree
+* updated tests to handle the transition of ASOIAF data to ggpedigree
+* smarter aliases
+* smarter CIs
+* tweaking variable inputs
+
+# BGmisc 1.4.4
+* Updated ASOIAF pedigree to include Tarths, Brackens
+* Added sliceFamilies function with working tests
+* Better messaging for sliceFamilies
+* Now has some error handling for sliceFamilies
+* Added option to restore variable names in selected places
+
+# BGmisc 1.4.3.2
 * Slightly expanded vignettes to include more examples of the new features in BGmisc and ggpedigree.
+* Updated ASOIAF pedigree to reduce missing parents.
+* Added tests to check if data are acyclic
+* reduce file size for royal92
+
+# BGmisc 1.4.3.1
+
+* Updated ASOIAF pedigree to reduce missing parents.
 
 # BGmisc 1.4.3
 * transferred plotPedigree to ggpedigree
