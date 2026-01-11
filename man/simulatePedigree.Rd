@@ -24,7 +24,8 @@ simulatePedigree(
   dadID = "dadID",
   spouseID = "spouseID",
   code_male = "M",
-  code_female = "F"
+  code_female = "F",
+  fam_shift = 1L
 )
 
 SimPed(...)
@@ -71,13 +72,15 @@ current version.}
 
 \item{code_female}{The value to use for females. Default is "F"}
 
+\item{fam_shift}{An integer to shift the person ID. Default is 1L.}
+
 \item{...}{Additional arguments to be passed to other functions.}
 }
 \value{
 A \code{data.frame} with each row representing a simulated individual. The columns are as follows:
 \itemize{
   \item{fam: The family id of each simulated individual. It is 'fam1' in a single simulated pedigree.}
-  \item{ID: The unique personal ID of each simulated individual. The first digit is the fam id; the fourth digit is the generation the individual is in; the following digits represent the order of the individual within his/her pedigree. For example, 100411 suggests this individual has a family id of 1, is in the 4th generation, and is the 11th individual in the 4th generation.}
+  \item{ID: The unique personal ID of each simulated individual. The first digit is the fam id; the fourth digit is the generation the individual is in; the following digits represent the order of the individual within their  pedigree. For example, 100411 suggests this individual has a family id of 1, is in the 4th generation, and is the 11th individual in the 4th generation.}
   \item{gen: The generation the simulated individual is in.}
   \item{dadID: Personal ID of the individual's father.}
   \item{momID: Personal ID of the individual's mother.}
@@ -92,4 +95,14 @@ This function simulates "balanced" pedigrees based on a group of parameters:
 2) G - Number of generations;
 3) p - Proportion of males in offspring;
 4) r - Mating rate.
+}
+\examples{
+set.seed(5)
+df_ped <- simulatePedigree(
+  kpc = 4,
+  Ngen = 4,
+  sexR = .5,
+  marR = .7
+)
+summary(df_ped)
 }

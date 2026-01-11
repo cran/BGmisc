@@ -1,11 +1,12 @@
 #' Construct Adjacency Matrix for Parent-Child Relationships
 #' @inheritParams ped2com
 #' @inheritParams computeParentAdjacency
+#' @keywords internal
 
 .adjLoop <- function(ped, component, saveable, resume,
                      save_path, verbose, lastComputed,
                      checkpoint_files, update_rate,
-                     parList, lens, save_rate_parlist, config,
+                     parList, lens, save_rate_parlist, config, compress = config$compress,
                      ...) {
   # Loop through each individual in the pedigree
   # Build the adjacency matrix for parent-child relationships
@@ -51,8 +52,8 @@
     }
     # Checkpointing every save_rate iterations
     if (saveable && (i %% save_rate_parlist == 0)) {
-      saveRDS(parList, file = checkpoint_files$parList)
-      saveRDS(lens, file = checkpoint_files$lens)
+      saveRDS(parList, file = checkpoint_files$parList, compress = compress)
+      saveRDS(lens, file = checkpoint_files$lens, compress = compress)
       if (verbose == TRUE) cat("Checkpointed parlist saved at iteration", i, "\n")
     }
   }
@@ -69,7 +70,7 @@
 .adjIndexed <- function(ped, component, saveable, resume,
                         save_path, verbose, lastComputed,
                         checkpoint_files, update_rate,
-                        parList, lens, save_rate_parlist, config) {
+                        parList, lens, save_rate_parlist, config, compress = config$compress) {
   # Loop through each individual in the pedigree
   # Build the adjacency matrix for parent-child relationships
   # Is person in column j the parent of the person in row i? .5 for yes, 0 for no.
@@ -113,8 +114,8 @@
 
     # Checkpointing every save_rate iterations
     if (saveable == TRUE && (i %% save_rate_parlist == 0)) {
-      saveRDS(parList, file = checkpoint_files$parList)
-      saveRDS(lens, file = checkpoint_files$lens)
+      saveRDS(parList, file = checkpoint_files$parList, compress = compress)
+      saveRDS(lens, file = checkpoint_files$lens, compress = compress)
       if (verbose == TRUE) cat("Checkpointed parlist saved at iteration", i, "\n")
     }
   }
@@ -135,7 +136,7 @@
 .adjDirect <- function(ped, component, saveable, resume,
                        save_path, verbose, lastComputed,
                        checkpoint_files, update_rate,
-                       parList, lens, save_rate_parlist, config,
+                       parList, lens, save_rate_parlist, config, compress = config$compress,
                        ...) {
   # Loop through each individual in the pedigree
   # Build the adjacency matrix for parent-child relationships
@@ -208,10 +209,11 @@
 
 #' Construct Adjacency Matrix for Parent-Child Relationships Using Beta Method
 #' This function constructs an adjacency matrix for parent-child relationships
-#' using a beta method. It identifies parent-child pairs based on the
+#' using a method in beta testing. It identifies parent-child pairs based on the
 #' specified component of relatedness.
 #' @inheritParams ped2com
 #' @inheritParams .adjLoop
+#'
 .adjBeta <- function(ped, component,
                      adjBeta_method = 5,
                      parList = NULL,
@@ -225,6 +227,7 @@
                      update_rate = NULL,
                      checkpoint_files = NULL,
                      config,
+                     compress = config$compress,
                      ...) { # 1) Pairwise compare mother IDs
   if (adjBeta_method == 1) {
     # gets slow when data are bigger. much slower than indexed
@@ -279,7 +282,7 @@
       }
     }
     # iss <- unlist(iss_list, use.names = FALSE)
-    #  jss <- unlist(jss_list, use.names = FALSE)
+    # jss <- unlist(jss_list, use.names = FALSE)
 
     list_of_adjacency <- list(
       iss = unlist(iss_list, use.names = FALSE),
@@ -406,7 +409,8 @@
       lastComputed = lastComputed, config = config,
       checkpoint_files = checkpoint_files,
       update_rate = update_rate, parList = parList,
-      lens = lens, save_rate_parlist = save_rate_parlist
+      lens = lens, save_rate_parlist = save_rate_parlist,
+      compress = compress
     )
   }
   return(list_of_adjacency)
@@ -424,6 +428,7 @@
 #' @param update_rate the rate at which to update the progress
 #'
 #' @export
+
 computeParentAdjacency <- function(ped, component,
                                    adjacency_method = "direct",
                                    saveable, resume,
@@ -435,6 +440,7 @@ computeParentAdjacency <- function(ped, component,
                                    parList, lens, save_rate_parlist,
                                    adjBeta_method = NULL,
                                    config,
+                                   compress = config$compress,
                                    ...) {
   if (!adjacency_method %in% c("loop", "indexed", "direct", "beta")) {
     stop("Invalid method specified. Choose from 'loop', 'direct', 'indexed', or 'beta'.")
@@ -460,6 +466,7 @@ computeParentAdjacency <- function(ped, component,
           lens = lens,
           save_rate_parlist = save_rate_parlist,
           config = config,
+          compress = compress,
           ...
         )
       },
@@ -479,6 +486,7 @@ computeParentAdjacency <- function(ped, component,
           lens = lens,
           save_rate_parlist = save_rate_parlist,
           config = config,
+          compress = compress,
           ...
         )
       },
@@ -498,9 +506,10 @@ computeParentAdjacency <- function(ped, component,
           lens = lens,
           save_rate_parlist = save_rate_parlist,
           config = config,
+          compress = compress,
           ...
         )
-      },
+      }, # beta testing versions
       "beta" = {
         .adjBeta(
           ped = ped,
@@ -517,14 +526,15 @@ computeParentAdjacency <- function(ped, component,
           lens = lens,
           save_rate_parlist = save_rate_parlist,
           config = config,
+          compress = compress,
           ...
         )
       }
     )
   }
   if (saveable == TRUE) {
-    saveRDS(parList, file = checkpoint_files$parList)
-    saveRDS(lens, file = checkpoint_files$lens)
+    saveRDS(parList, file = checkpoint_files$parList, compress = compress)
+    saveRDS(lens, file = checkpoint_files$lens, compress = compress)
     if (verbose == TRUE) {
       cat("Final checkpoint saved for adjacency matrix.\n")
     }
@@ -532,12 +542,11 @@ computeParentAdjacency <- function(ped, component,
   return(list_of_adjacency)
 }
 
-
 #' Determine isChild Status, isChild is the 'S' matrix from RAM
 #' @param isChild_method method to determine isChild status
 #' @param ped pedigree data frame
 #' @return isChild 'S' matrix
-#'
+#' @keywords internal
 
 isChild <- function(isChild_method, ped) {
   if (isChild_method == "partialparent") {

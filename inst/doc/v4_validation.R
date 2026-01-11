@@ -111,7 +111,6 @@ print(df_fix)
 # )
 # 
 # 
-# 
 # summarizePedigrees(sample_data)
 # 
 # 

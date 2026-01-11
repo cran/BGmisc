@@ -11,7 +11,7 @@ data(potter)
 
 ## ----echo=FALSE, results='hide', out.width='50%', fig.cap="Potter Family Pedigree"----
 library(ggpedigree)
-ggpedigree(potter, code_male = 1, verbose = TRUE)
+ggpedigree(potter, config = list(code_male = 1))
 
 ## -----------------------------------------------------------------------------
 df_potter <- potter
@@ -65,12 +65,12 @@ subset_potter <- potter[subset_rows, ]
 subset_potter$dadID[subset_potter$dadID %in% c(9, 10)] <- NA
 subset_potter$momID[subset_potter$momID %in% c(9, 10)] <- NA
 
-ggpedigree(subset_potter, code_male = 1, verbose = TRUE)
+ggpedigree(subset_potter, config = list(code_male = 1))
 
 ## -----------------------------------------------------------------------------
 subset_rows <- c(1:5, 31:36)
 subset_potter <- potter[subset_rows, ]
 
 ## ----echo=FALSE, results='hide', out.width='50%'------------------------------
-ggpedigree(subset_potter, code_male = 1, verbose = TRUE)
+ggpedigree(subset_potter, config = list(code_male = 1))
 

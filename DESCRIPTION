@@ -1,6 +1,6 @@
 Package: BGmisc
 Title: An R Package for Extended Behavior Genetics Analysis
-Version: 1.5.0
+Version: 1.5.2
 Authors@R: c(
     person("S. Mason", "Garrison", , "garrissm@wfu.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4804-6003")),
@@ -10,7 +10,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-2841-5529")),
     person(c("Rachel", "N."), "Good", role = "ctb"),
     person(c("Jonathan", "D."), "Trattner", , "code@jdtrat.com", role = "aut",
-           comment = c(ORCID = "0000-0002-1097-7603", url = "https://www.jdtrat.com/")),
+           comment = c(ORCID = "0000-0002-1097-7603")),
     person(c("S.", "Alexandra"), "Burt", role = "aut",
            comment = c(ORCID = "0000-0001-5538-7431"))
   )
@@ -35,9 +35,9 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2025-07-19 01:56:19 UTC; smaso
+Packaged: 2026-01-09 18:55:40 UTC; smaso
 Author: S. Mason Garrison [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-4804-6003>),
   Michael D. Hunter [aut] (ORCID:
@@ -45,10 +45,9 @@ Author: S. Mason Garrison [aut, cre] (ORCID:
   Xuanyu Lyu [aut] (ORCID: <https://orcid.org/0000-0002-2841-5529>),
   Rachel N. Good [ctb],
   Jonathan D. Trattner [aut] (ORCID:
-    <https://orcid.org/0000-0002-1097-7603>, url:
-    https://www.jdtrat.com/),
+    <https://orcid.org/0000-0002-1097-7603>),
   S. Alexandra Burt [aut] (ORCID:
     <https://orcid.org/0000-0001-5538-7431>)
 Maintainer: S. Mason Garrison <garrissm@wfu.edu>
 Repository: CRAN
-Date/Publication: 2025-07-19 02:40:08 UTC
+Date/Publication: 2026-01-11 06:12:42 UTC

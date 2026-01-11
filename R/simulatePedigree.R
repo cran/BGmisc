@@ -10,9 +10,16 @@ buildWithinGenerations <- function(sizeGens, marR, sexR, Ngen, verbose = FALSE,
                                    personID = "ID",
                                    momID = "momID",
                                    dadID = "dadID",
-                                   code_male = "M", code_female = "F") {
+                                   code_male = "M",
+                                   code_female = "F",
+                                   fam_shift = 1L) {
+  idx_width <- nchar(max(sizeGens))
+  gen_width <- max(2L, nchar(Ngen))
+  fam_shift <- 1L
+
   for (i in 1:Ngen) {
-    idGen <- as.numeric(paste(100, i, 1:sizeGens[i], sep = ""))
+    # idGen <- as.numeric(paste(100, i, 1:sizeGens[i], sep = ""))
+    idGen <- fam_shift * 10^(gen_width + idx_width) + i * 10^(idx_width) + (1:sizeGens[i])
     # idGen <- ifelse(i==1,
     #                 paste(i,"-",1:sizeGens[i]),
     #                 paste(i,"-",sizeGens[i-1]:sizeGens[i]))
@@ -48,17 +55,17 @@ buildWithinGenerations <- function(sizeGens, marR, sexR, Ngen, verbose = FALSE,
     usedMaleIds <- numeric()
     # reserve the single persons
     if (i != 1 && i != Ngen) {
-      nMerriedFemale <- round(sum(df_Ngen$sex == code_female) * marR_crt)
-      nMerriedMale <- round(sum(df_Ngen$sex == code_male) * marR_crt)
+      nMarriedFemale <- round(sum(df_Ngen$sex == code_female) * marR_crt)
+      nMarriedMale <- round(sum(df_Ngen$sex == code_male) * marR_crt)
       # make sure there are same numbers of married males and females
-      if (nMerriedFemale >= nMerriedMale) {
-        nMerriedFemale <- nMerriedMale
+      if (nMarriedFemale >= nMarriedMale) {
+        nMarriedFemale <- nMarriedMale
       } else {
-        nMerriedMale <- nMerriedFemale
+        nMarriedMale <- nMarriedFemale
       }
       # get the number of single males and females
-      nSingleFemale <- sum(df_Ngen$sex == code_female) - nMerriedFemale
-      nSingleMale <- sum(df_Ngen$sex == code_male) - nMerriedMale
+      nSingleFemale <- sum(df_Ngen$sex == code_female) - nMarriedFemale
+      nSingleMale <- sum(df_Ngen$sex == code_male) - nMarriedMale
 
 
       # sample single ids from male ids and female ids
@@ -201,7 +208,7 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
       SingleF <- sum(df_Ngen$sex == code_female & is.na(df_Ngen$spID))
       CoupleF <- N_LinkedFemale - SingleF
       SingleM <- sum(df_Ngen$sex == code_male & is.na(df_Ngen$spID))
-      CoupleM <- N_LinkedMale - SingleM
+      #     CoupleM <- N_LinkedMale - SingleM
 
       df_Fam[df_Fam$gen == i, ] <- markPotentialChildren(
         df_Ngen = df_Ngen,
@@ -231,7 +238,7 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
           break
         } else {
           # check if the id is used and if the member has married
-          if (!(df_Ngen$id[k] %in% usedParentIds) & !is.na(df_Ngen$spID[k])) {
+          if (!(df_Ngen$id[k] %in% usedParentIds) && !is.na(df_Ngen$spID[k])) {
             df_Ngen$ifparent[k] <- TRUE
             df_Ngen$ifparent[df_Ngen$spID == df_Ngen$id[k]] <- TRUE
             usedParentIds <- c(usedParentIds, df_Ngen$id[k], df_Ngen$spID[k])
@@ -375,13 +382,15 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
 #' @param verbose logical  If TRUE, message progress through stages of algorithm
 #' @param code_male The value to use for males. Default is "M"
 #' @param code_female The value to use for females. Default is "F"
+#' @param fam_shift An integer to shift the person ID. Default is 1L.
+#'
 #' @param ... Additional arguments to be passed to other functions.
 #' @inheritParams ped2fam
 #' @param spouseID The name of the column that will contain the spouse ID in the output data frame. Default is "spID".
 #' @return A \code{data.frame} with each row representing a simulated individual. The columns are as follows:
 #' \itemize{
 #'   \item{fam: The family id of each simulated individual. It is 'fam1' in a single simulated pedigree.}
-#'   \item{ID: The unique personal ID of each simulated individual. The first digit is the fam id; the fourth digit is the generation the individual is in; the following digits represent the order of the individual within his/her pedigree. For example, 100411 suggests this individual has a family id of 1, is in the 4th generation, and is the 11th individual in the 4th generation.}
+#'   \item{ID: The unique personal ID of each simulated individual. The first digit is the fam id; the fourth digit is the generation the individual is in; the following digits represent the order of the individual within their  pedigree. For example, 100411 suggests this individual has a family id of 1, is in the 4th generation, and is the 11th individual in the 4th generation.}
 #'   \item{gen: The generation the simulated individual is in.}
 #'   \item{dadID: Personal ID of the individual's father.}
 #'   \item{momID: Personal ID of the individual's mother.}
@@ -389,7 +398,15 @@ buildBetweenGenerations <- function(df_Fam, Ngen, sizeGens, verbose = FALSE, mar
 #'   \item{sex: Biological sex of the individual. F - female; M - male.}
 #' }
 #' @export
-
+#' @examples
+#' set.seed(5)
+#' df_ped <- simulatePedigree(
+#'   kpc = 4,
+#'   Ngen = 4,
+#'   sexR = .5,
+#'   marR = .7
+#' )
+#' summary(df_ped)
 simulatePedigree <- function(kpc = 3,
                              Ngen = 4,
                              sexR = .5,
@@ -403,7 +420,8 @@ simulatePedigree <- function(kpc = 3,
                              dadID = "dadID",
                              spouseID = "spouseID",
                              code_male = "M",
-                             code_female = "F") {
+                             code_female = "F",
+                             fam_shift = 1L) {
   # SexRatio: ratio of male over female in the offspring setting; used in the between generation combinations
   # SexRatio <- sexR / (1 - sexR)
 
@@ -425,7 +443,8 @@ simulatePedigree <- function(kpc = 3,
     momID = momID,
     dadID = dadID,
     code_male = code_male,
-    code_female = code_female
+    code_female = code_female,
+    fam_shift = fam_shift
   )
   if (verbose == TRUE) {
     message(

@@ -165,8 +165,6 @@ test_that("summarizePedigrees() throws error on invalid column names", {
 })
 
 
-
-
 # Test Case 9: Handling empty dataset
 # test_that("summarizePedigrees() handles empty dataset gracefully", {
 #  df <- data.frame(ID = integer(), momID = integer(), dadID = integer(), famID = integer())
@@ -183,6 +181,8 @@ test_that("summarizePedigrees() works for single-entry pedigree", {
   df <- data.frame(ID = 1, momID = NA, dadID = NA, famID = 1, byr = 1920)
   df_summarized <- summarizePedigrees(df, byr = "byr", verbose = TRUE)
   expect_equal(nrow(df_summarized$family_summary), 1)
+
+
   expect_equal(df_summarized$oldest_families$byr_mean, 1920)
 })
 

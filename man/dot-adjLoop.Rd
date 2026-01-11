@@ -18,6 +18,7 @@
   lens,
   save_rate_parlist,
   config,
+  compress = config$compress,
   ...
 )
 }
@@ -48,8 +49,11 @@
 
 \item{config}{a configuration list that passes parameters to the function}
 
+\item{compress}{logical. If TRUE, use compression when saving the checkpoint files.  Defaults to TRUE.}
+
 \item{...}{additional arguments to be passed to \code{\link{ped2com}}}
 }
 \description{
 Construct Adjacency Matrix for Parent-Child Relationships
 }
+\keyword{internal}
